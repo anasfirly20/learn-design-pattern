@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type TTodo = {
   id: number;
@@ -22,23 +22,29 @@ const initialState: TTodo[] = [
 export const useTodo = () => {
   const [todo, setTodo] = useState<TTodo[]>(initialState);
   const [newTodo, setNewTodo] = useState<string>("");
-
-  //   TRACK
-  useEffect(() => {
-    console.log(">>>", todo);
-  }, [todo]);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [selectedTodo, setSelectedTodo] = useState<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodo(e.target.value);
+    if (isEdit) {
+      const updatedData = todo?.map((t) =>
+        t.id === selectedTodo ? { ...t, name: e.target.value } : t
+      );
+      setTodo(updatedData);
+    } else {
+      setNewTodo(e.target.value);
+    }
   };
 
   const handleAdd = (name: string) => {
-    const newTodo: TTodo = {
+    const newTask: TTodo = {
       id: todo.length + 1,
       name: name,
       completed: false,
     };
-    setTodo([...todo, newTodo]);
+    if (newTodo) {
+      setTodo([...todo, newTask]);
+    }
     reset();
   };
 
@@ -51,12 +57,24 @@ export const useTodo = () => {
     setTodo(updatedTodo);
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement> | KeyboardEvent
-  ) => {
-    if (e.key === "Enter") {
-      handleAdd(newTodo);
-    }
+  const handleUpdate = (todoId: number, name: string) => {
+    const modifiedTodo = todo.map((t) => {
+      if (t.id === todoId) {
+        const updatedTodo = {
+          ...t,
+          name: name,
+        };
+        return updatedTodo;
+      } else {
+        return t;
+      }
+    });
+    setTodo(modifiedTodo);
+    toggleEdit();
+  };
+
+  const toggleEdit = () => {
+    setIsEdit(!isEdit);
   };
 
   return {
@@ -65,6 +83,10 @@ export const useTodo = () => {
     handleChange,
     handleAdd,
     handleDelete,
-    handleKeyDown,
+    handleUpdate,
+    isEdit,
+    selectedTodo,
+    setSelectedTodo,
+    toggleEdit,
   };
 };

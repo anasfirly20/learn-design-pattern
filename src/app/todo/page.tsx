@@ -14,7 +14,11 @@ export default function TodoPage() {
     newTodo,
     todo,
     handleDelete,
-    handleKeyDown,
+    handleUpdate,
+    isEdit,
+    selectedTodo,
+    setSelectedTodo,
+    toggleEdit,
   } = useTodo();
 
   return (
@@ -27,7 +31,11 @@ export default function TodoPage() {
             isClearable
             value={newTodo}
             onChange={(e) => handleChange(e)}
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleAdd(newTodo);
+              }
+            }}
           />
           <Button color="primary" onClick={() => handleAdd(newTodo)}>
             Submit
@@ -37,19 +45,53 @@ export default function TodoPage() {
           <h5>Items List</h5>
           <section className="grid">
             {todo.map((item) => {
+              const selectedItem = item?.id === selectedTodo;
               return (
                 <div
                   key={item.id}
                   className="flex justify-between items-center px-5 py-2 bg-bg-primary rounded-sm"
                 >
-                  <p className="text-text-primary">{item.name}</p>
-                  <div className="flex gap-3">
-                    <Icon icon="bx:edit" className="text-2xl icon" />
-                    <Icon
-                      icon="material-symbols:delete-outline"
-                      className="text-2xl icon"
-                      onClick={() => handleDelete(item.id)}
+                  {isEdit && selectedItem ? (
+                    <Input
+                      value={isEdit && selectedTodo ? item?.name : newTodo}
+                      className="w-[90%]"
+                      onChange={(e) => handleChange(e)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleUpdate(item?.id, item?.name);
+                        }
+                      }}
                     />
+                  ) : (
+                    <p className="text-text-primary">{item?.name}</p>
+                  )}
+                  <div className="flex gap-3">
+                    {isEdit && selectedItem && (
+                      <Icon
+                        icon="ic:baseline-done"
+                        className="text-2xl icon"
+                        onClick={() => {
+                          handleUpdate(item?.id, item?.name);
+                        }}
+                      />
+                    )}
+                    {!isEdit && (
+                      <>
+                        <Icon
+                          icon="bx:edit"
+                          className="text-2xl icon"
+                          onClick={() => {
+                            setSelectedTodo(item?.id);
+                            toggleEdit();
+                          }}
+                        />
+                        <Icon
+                          icon="material-symbols:delete-outline"
+                          className="text-2xl icon"
+                          onClick={() => handleDelete(item.id)}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               );
