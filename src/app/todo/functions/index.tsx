@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type TTodo = {
   id: number;
@@ -21,11 +21,14 @@ const initialState: TTodo[] = [
 
 export const useTodo = () => {
   const [todo, setTodo] = useState<TTodo[]>(initialState);
-  const [newTodo, setNewTodo] = useState("");
+  const [newTodo, setNewTodo] = useState<string>("");
+
+  //   TRACK
+  useEffect(() => {
+    console.log(">>>", todo);
+  }, [todo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // const { name, value } = e.target;
-    // setNewTodo({ ...newTodo, [name]: value });
     setNewTodo(e.target.value);
   };
 
@@ -48,5 +51,20 @@ export const useTodo = () => {
     setTodo(updatedTodo);
   };
 
-  return { newTodo, todo, handleChange, handleAdd, handleDelete };
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement> | KeyboardEvent
+  ) => {
+    if (e.key === "Enter") {
+      handleAdd(newTodo);
+    }
+  };
+
+  return {
+    newTodo,
+    todo,
+    handleChange,
+    handleAdd,
+    handleDelete,
+    handleKeyDown,
+  };
 };

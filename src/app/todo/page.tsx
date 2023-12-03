@@ -2,13 +2,20 @@
 
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Icon } from "@iconify/react";
 import { useTodo } from "./functions";
 
 export default function TodoPage() {
-  const { handleAdd, handleChange, newTodo, todo, handleDelete } = useTodo();
+  const {
+    handleAdd,
+    handleChange,
+    newTodo,
+    todo,
+    handleDelete,
+    handleKeyDown,
+  } = useTodo();
 
   return (
     <section className="flex flex-col justify-center items-center">
@@ -18,14 +25,15 @@ export default function TodoPage() {
           <h5>Add Item</h5>
           <Input
             isClearable
-            onChange={(e) => handleChange(e)}
             value={newTodo}
+            onChange={(e) => handleChange(e)}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
           <Button color="primary" onClick={() => handleAdd(newTodo)}>
             Submit
           </Button>
         </section>
-        <div className="grid gap-5 h-fit">
+        <section className="grid gap-5 h-fit">
           <h5>Items List</h5>
           <section className="grid">
             {todo.map((item) => {
@@ -47,7 +55,7 @@ export default function TodoPage() {
               );
             })}
           </section>
-        </div>
+        </section>
       </section>
     </section>
   );
