@@ -58,7 +58,7 @@ export const useTodo = () => {
   };
 
   const handleUpdate = (todoId: number, name: string) => {
-    const modifiedTodo = todo.map((t) => {
+    const modifiedTodo = todo?.map((t) => {
       if (t.id === todoId) {
         const updatedTodo = {
           ...t,
