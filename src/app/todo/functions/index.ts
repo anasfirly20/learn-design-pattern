@@ -42,10 +42,10 @@ export const useTodo = () => {
       name: name,
       completed: false,
     };
-    if (newTodo) {
+    if (newTodo.trim() !== "") {
       setTodo([...todo, newTask]);
+      reset();
     }
-    reset();
   };
 
   const reset = () => {
