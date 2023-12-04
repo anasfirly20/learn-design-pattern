@@ -39,19 +39,24 @@ export default function TodoPage() {
                 handleAdd(newTodo);
               }
             }}
+            data-testid="todo-input"
           />
-          <Button color="primary" onClick={() => handleAdd(newTodo)}>
+          <Button
+            color="primary"
+            onClick={() => handleAdd(newTodo)}
+            data-testid="add-todo"
+          >
             Submit
           </Button>
         </section>
         <section className="grid gap-5 h-fit">
           <h5>Items List</h5>
           {todo?.length > 0 && (
-            <section className="grid">
+            <ul className="grid" data-testid="todo-list">
               {todo.map((item) => {
                 const selectedItem = item?.id === selectedTodo;
                 return (
-                  <div
+                  <li
                     key={item.id}
                     className="flex justify-between items-center px-5 py-2 bg-bg-primary rounded-sm border border-bg-secondary"
                   >
@@ -93,14 +98,15 @@ export default function TodoPage() {
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
                             onClick={() => handleDelete(item.id)}
+                            data-testid={`delete-todo-${item.id}`}
                           />
                         </>
                       )}
                     </div>
-                  </div>
+                  </li>
                 );
               })}
-            </section>
+            </ul>
           )}
           {todo?.length === 0 && (
             <p className="text-text-secondary">No items</p>
