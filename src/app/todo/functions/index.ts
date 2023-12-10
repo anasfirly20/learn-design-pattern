@@ -26,9 +26,7 @@ export const useTodo = () => {
   });
 
   const addTodo = useMutation({
-    mutationFn: (body: TTodo) => {
-      return postTodo(body);
-    },
+    mutationFn: (body: TTodo) => postTodo(body),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
@@ -78,15 +76,15 @@ export const useTodo = () => {
 
   return {
     newTodo,
-    handleChange,
     isEdit,
     selectedTodo,
-    setSelectedTodo,
-    toggleEdit,
     data,
     isPending,
     isError,
     dataEdit,
+    handleChange,
+    setSelectedTodo,
+    toggleEdit,
     setDataEdit,
     handleMutation,
   };
