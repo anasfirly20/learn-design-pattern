@@ -8,6 +8,7 @@ import { Input } from "@nextui-org/input";
 import { useTodo } from "./functions";
 
 // Miscellaneous
+import { v4 as uuidv4 } from "uuid";
 import { Icon } from "@iconify/react";
 
 // Components
@@ -21,17 +22,13 @@ export default function TodoPage() {
     selectedTodo,
     setSelectedTodo,
     toggleEdit,
-    // tanstack
     data,
     isPending,
     isError,
-    handleAdd,
     dataEdit,
-    handleUpdate,
     setDataEdit,
     handleChange,
-    addTodo,
-    deleteTodo,
+    handleMutation,
   } = useTodo();
 
   return (
@@ -45,14 +42,24 @@ export default function TodoPage() {
             onChange={(e) => handleChange(e)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleAdd(newTodo);
+                handleMutation("add", {
+                  id: uuidv4(),
+                  name: newTodo,
+                  completed: false,
+                });
               }
             }}
             data-testid="todo-input"
           />
           <Button
             color="primary"
-            onClick={() => handleAdd(newTodo)}
+            onClick={() =>
+              handleMutation("add", {
+                id: uuidv4(),
+                name: newTodo,
+                completed: false,
+              })
+            }
             data-testid="add-todo"
           >
             Submit
@@ -78,7 +85,11 @@ export default function TodoPage() {
                         onChange={(e) => handleChange(e)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            handleUpdate(item?.id, dataEdit);
+                            handleMutation("edit", {
+                              id: item?.id,
+                              name: dataEdit,
+                              completed: false,
+                            });
                           }
                         }}
                       />
@@ -91,7 +102,10 @@ export default function TodoPage() {
                           icon="ic:baseline-done"
                           className="text-2xl icon"
                           onClick={() => {
-                            handleUpdate(item?.id, dataEdit);
+                            handleMutation("edit", {
+                              id: item?.id,
+                              name: dataEdit,
+                            });
                           }}
                         />
                       )}
@@ -109,7 +123,7 @@ export default function TodoPage() {
                           <Icon
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
-                            onClick={() => deleteTodo.mutate(item?.id)}
+                            onClick={() => handleMutation("delete", item?.id)}
                             data-testid={`delete-todo-${item.id}`}
                           />
                         </>
