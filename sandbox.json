@@ -1,0 +1,19 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "name": "Wash dishes",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "name": "Do the laundry",
+      "completed": true
+    },
+    {
+      "id": 3,
+      "name": "Cooking",
+      "completed": false
+    }
+  ]
+}
