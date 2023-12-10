@@ -10,18 +10,28 @@ import { useTodo } from "./functions";
 // Miscellaneous
 import { Icon } from "@iconify/react";
 
+// Components
+import LoadingComponent from "./components/Loading";
+import ErrorComponent from "./components/Error";
+
 export default function TodoPage() {
   const {
-    handleAdd,
-    handleChange,
     newTodo,
-    todo,
-    handleDelete,
-    handleUpdate,
     isEdit,
     selectedTodo,
     setSelectedTodo,
     toggleEdit,
+    // tanstack
+    data,
+    isPending,
+    isError,
+    handleAdd,
+    dataEdit,
+    handleUpdate,
+    setDataEdit,
+    handleChange,
+    addTodo,
+    deleteTodo,
   } = useTodo();
 
   return (
@@ -31,7 +41,6 @@ export default function TodoPage() {
         <section className="grid gap-5 h-fit">
           <h5>Add Item</h5>
           <Input
-            isClearable
             value={newTodo}
             onChange={(e) => handleChange(e)}
             onKeyDown={(e) => {
@@ -51,9 +60,11 @@ export default function TodoPage() {
         </section>
         <section className="grid gap-5 h-fit">
           <h5>Items List</h5>
-          {todo?.length > 0 && (
+          {isPending && <LoadingComponent />}
+          {isError && <ErrorComponent />}
+          {data && data?.length > 0 && !isError && (
             <ul className="grid" data-testid="todo-list">
-              {todo.map((item) => {
+              {data?.map((item) => {
                 const selectedItem = item?.id === selectedTodo;
                 return (
                   <li
@@ -62,12 +73,12 @@ export default function TodoPage() {
                   >
                     {isEdit && selectedItem ? (
                       <Input
-                        value={isEdit && selectedTodo ? item?.name : newTodo}
+                        value={dataEdit}
                         className="w-[90%]"
                         onChange={(e) => handleChange(e)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            handleUpdate(item?.id, item?.name);
+                            handleUpdate(item?.id, dataEdit);
                           }
                         }}
                       />
@@ -80,7 +91,7 @@ export default function TodoPage() {
                           icon="ic:baseline-done"
                           className="text-2xl icon"
                           onClick={() => {
-                            handleUpdate(item?.id, item?.name);
+                            handleUpdate(item?.id, dataEdit);
                           }}
                         />
                       )}
@@ -91,13 +102,14 @@ export default function TodoPage() {
                             className="text-2xl icon"
                             onClick={() => {
                               setSelectedTodo(item?.id);
+                              setDataEdit(item?.name);
                               toggleEdit();
                             }}
                           />
                           <Icon
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => deleteTodo.mutate(item?.id)}
                             data-testid={`delete-todo-${item.id}`}
                           />
                         </>
@@ -108,7 +120,7 @@ export default function TodoPage() {
               })}
             </ul>
           )}
-          {todo?.length === 0 && (
+          {data?.length === 0 && (
             <p className="text-text-secondary">No items</p>
           )}
         </section>

@@ -1,18 +1,18 @@
 {
   "todos": [
     {
-      "id": 1,
-      "name": "Wash dishes",
+      "id": "673dc375-4c97-4ce1-82b6-dc8a1a3b1456",
+      "name": "1",
       "completed": false
     },
     {
-      "id": 2,
-      "name": "Do the laundry",
-      "completed": true
+      "id": "a0a88cab-6df9-49fa-943d-2efc0b5bcb91",
+      "name": "2",
+      "completed": false
     },
     {
-      "id": 3,
-      "name": "Cooking",
+      "id": "7b90ce1a-aa2d-47f5-a6dd-688a9e4d064c",
+      "name": "coba",
       "completed": false
     }
   ]

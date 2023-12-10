@@ -1,92 +1,112 @@
+import {
+  getAllTodos,
+  postTodo,
+  deleteTodoById,
+  editTodoById,
+} from "@/api/routes/todos";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-
-type TTodo = {
-  id: number;
-  name: string;
-  completed: boolean;
-};
-
-const initialState: TTodo[] = [
-  {
-    id: 1,
-    name: "Wash dishes",
-    completed: false,
-  },
-  {
-    id: 2,
-    name: "Do the laundry",
-    completed: false,
-  },
-];
+import { v4 as uuidv4 } from "uuid";
 
 export const useTodo = () => {
-  const [todo, setTodo] = useState<TTodo[]>(initialState);
   const [newTodo, setNewTodo] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [selectedTodo, setSelectedTodo] = useState<number | null>(null);
+  const [dataEdit, setDataEdit] = useState<string>("");
+  const [selectedTodo, setSelectedTodo] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isEdit) {
-      const updatedData = todo?.map((t) =>
-        t.id === selectedTodo ? { ...t, name: e.target.value } : t
-      );
-      setTodo(updatedData);
-    } else {
-      setNewTodo(e.target.value);
-    }
-  };
+  // tanstack
+  const queryClient = useQueryClient();
+
+  // Read
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["todos"],
+    queryFn: getAllTodos,
+  });
+
+  // Add
+  const addTodo = useMutation({
+    mutationFn: (body: TTodo) => {
+      return postTodo(body);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
 
   const handleAdd = (name: string) => {
     const newTask: TTodo = {
-      id: todo.length + 1,
+      id: uuidv4(),
       name: name,
       completed: false,
     };
     if (newTodo.trim() !== "") {
-      setTodo([...todo, newTask]);
+      addTodo.mutate(newTask);
       reset();
     }
   };
 
-  const reset = () => {
-    setNewTodo("");
-  };
+  // Delete
+  const deleteTodo = useMutation({
+    mutationFn: (todoId: string) => {
+      return deleteTodoById(todoId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
 
-  const handleDelete = (todoId: number) => {
-    const updatedTodo = todo?.filter((t) => t.id !== todoId);
-    setTodo(updatedTodo);
-  };
+  // Edit
+  const editTodo = useMutation({
+    mutationFn: (variables: TTodo) => {
+      console.log("variables", variables);
+      return editTodoById(variables.id, variables);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
 
-  const handleUpdate = (todoId: number, name: string) => {
-    const modifiedTodo = todo?.map((t) => {
-      if (t.id === todoId) {
-        const updatedTodo = {
-          ...t,
-          name: name,
-        };
-        return updatedTodo;
-      } else {
-        return t;
-      }
+  const handleUpdate = async (todoId: string, name: string) => {
+    editTodo.mutate({
+      id: todoId,
+      name: name,
+      completed: false,
     });
-    setTodo(modifiedTodo);
     toggleEdit();
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isEdit) {
+      setDataEdit(e.target.value);
+    } else {
+      setNewTodo(e.target.value);
+    }
   };
 
   const toggleEdit = () => {
     setIsEdit(!isEdit);
   };
 
+  const reset = () => {
+    setNewTodo("");
+  };
+
   return {
     newTodo,
-    todo,
     handleChange,
     handleAdd,
-    handleDelete,
     handleUpdate,
     isEdit,
     selectedTodo,
     setSelectedTodo,
     toggleEdit,
+    // tanstack
+    data,
+    isPending,
+    isError,
+    addTodo,
+    deleteTodo,
+    dataEdit,
+    setDataEdit,
   };
 };
