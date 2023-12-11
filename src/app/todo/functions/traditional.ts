@@ -7,6 +7,7 @@ export const useTraditional = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
+  // READ
   const getAllTodos = async () => {
     try {
       setIsLoading(true);
@@ -21,7 +22,7 @@ export const useTraditional = () => {
     }
   };
 
-  // POST
+  // CREATE
   const createTodo = async (newTodo: TTodo) => {
     try {
       setIsLoading(true);
@@ -51,7 +52,7 @@ export const useTraditional = () => {
     }
   };
 
-  // EDIT
+  // UPDATE
   const editTodo = async (todoId: string, body: TTodo) => {
     try {
       setIsLoading(true);

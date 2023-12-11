@@ -6,6 +6,7 @@ import { API_ENDPOINT } from "../constants/constants";
 export const useTanstack = () => {
   const queryClient = useQueryClient();
 
+  // READ
   const getAllTodos = async () => {
     const response = await axios.get(API_ENDPOINT);
     return response?.data;
@@ -16,7 +17,7 @@ export const useTanstack = () => {
     queryFn: getAllTodos,
   });
 
-  // POST
+  // CREATE
   const postTodo = async (body: TTodo) => {
     const response = await axios.post(API_ENDPOINT, body);
     return response?.data;
@@ -28,17 +29,17 @@ export const useTanstack = () => {
   });
 
   // DELETE
-  const deleteTodoById = async (todoId: string) => {
+  const removeTodo = async (todoId: string) => {
     const response = await axios.delete(`${API_ENDPOINT}/${todoId}`);
     return response?.data;
   };
 
   const deleteTodo = useMutation({
-    mutationFn: (todoId: string) => deleteTodoById(todoId),
+    mutationFn: (todoId: string) => removeTodo(todoId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
-  // EDIT
+  // UPDATE
   const putTodo = async (todoId: string, body: TTodo) => {
     const response = await axios.put(`${API_ENDPOINT}/${todoId}`, body);
     return response?.data;
