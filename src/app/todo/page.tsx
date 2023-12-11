@@ -6,15 +6,16 @@ import { Input } from "@nextui-org/input";
 
 // Functions
 import { useTraditional } from "./functions/traditional";
+import { useTanstack } from "./functions/tanstack";
 
 // Miscellaneous
 import { v4 as uuidv4 } from "uuid";
 import { Icon } from "@iconify/react";
+import { useEffect, useState } from "react";
 
 // Components
 import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
-import { useEffect, useState } from "react";
 
 export default function TodoPage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -62,23 +63,23 @@ export default function TodoPage() {
   };
 
   // Tanstack
-  // const { query, createTodo, deleteTodo, editTodo } = useTanstack();
-  // const { data, isLoading, isError } = query;
+  const { query, createTodo, deleteTodo, editTodo } = useTanstack();
+  const { data, isPending: isLoading, isError } = query;
 
   // Traditional
-  const {
-    data,
-    isLoading,
-    isError,
-    getAllTodos,
-    createTodo,
-    deleteTodo,
-    editTodo,
-  } = useTraditional();
+  // const {
+  //   data,
+  //   isLoading,
+  //   isError,
+  //   getAllTodos,
+  //   createTodo,
+  //   deleteTodo,
+  //   editTodo,
+  // } = useTraditional();
 
-  useEffect(() => {
-    getAllTodos();
-  }, []);
+  // useEffect(() => {
+  //   getAllTodos();
+  // }, []);
 
   return (
     <section className="flex flex-col justify-center items-center">
@@ -93,8 +94,11 @@ export default function TodoPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 if (newTodo?.name.trim() !== "") {
-                  // createTodo.mutate(newTodo);
-                  createTodo(newTodo);
+                  // Tanstack
+                  createTodo.mutate(newTodo);
+
+                  // Traditional way
+                  // createTodo(newTodo);
                   resetForm(null);
                 }
               }
@@ -105,8 +109,11 @@ export default function TodoPage() {
             color="primary"
             onClick={() => {
               if (newTodo?.name.trim() !== "") {
-                // createTodo.mutate(newTodo);
-                createTodo(newTodo);
+                // Tanstack
+                createTodo.mutate(newTodo);
+
+                // Traditional way
+                // createTodo(newTodo);
                 resetForm(null);
               }
             }}
@@ -137,8 +144,11 @@ export default function TodoPage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             if (dataEdit?.name?.trim() !== "") {
-                              // editTodo.mutate(dataEdit);
-                              editTodo(item?.id, dataEdit);
+                              // Tanstack
+                              editTodo.mutate(dataEdit);
+
+                              // Traditional way
+                              // editTodo(item?.id, dataEdit);
                               toggleEdit();
                             }
                           }
@@ -154,8 +164,11 @@ export default function TodoPage() {
                           className="text-2xl icon"
                           onClick={() => {
                             if (dataEdit?.name?.trim() !== "") {
-                              // editTodo.mutate(dataEdit);
-                              editTodo(item?.id, dataEdit);
+                              // Tanstack
+                              editTodo.mutate(dataEdit);
+
+                              // Traditional way
+                              // editTodo(item?.id, dataEdit);
                               toggleEdit();
                             }
                           }}
@@ -180,8 +193,11 @@ export default function TodoPage() {
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
                             onClick={() => {
-                              // deleteTodo.mutate(item?.id);
-                              deleteTodo(item?.id);
+                              // Tanstack
+                              deleteTodo.mutate(item?.id);
+
+                              // Traditional way
+                              // deleteTodo(item?.id);
                             }}
                             data-testid={`delete-todo-${item.id}`}
                           />

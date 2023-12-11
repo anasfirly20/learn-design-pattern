@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { API_ENDPOINT } from "../constants/constants";
 
 export const useTraditional = () => {
   const [data, setData] = useState<TTodo[]>([]);
@@ -9,7 +10,7 @@ export const useTraditional = () => {
   const getAllTodos = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("http://localhost:5000/todos");
+      const response = await axios.get(API_ENDPOINT);
       const todos = response?.data;
       setData(todos);
       setIsLoading(false);
@@ -24,7 +25,7 @@ export const useTraditional = () => {
   const createTodo = async (newTodo: TTodo) => {
     try {
       setIsLoading(true);
-      await axios.post("http://localhost:5000/todos", newTodo);
+      await axios.post(API_ENDPOINT, newTodo);
       // Refetch todos data
       getAllTodos();
       setIsLoading(false);
@@ -39,7 +40,7 @@ export const useTraditional = () => {
   const deleteTodo = async (todoId: string) => {
     try {
       setIsLoading(true);
-      await axios.delete(`http://localhost:5000/todos/${todoId}`);
+      await axios.delete(`${API_ENDPOINT}/${todoId}`);
       // Refetch todos data
       getAllTodos();
       setIsLoading(false);
@@ -50,11 +51,11 @@ export const useTraditional = () => {
     }
   };
 
-  // PUT
+  // EDIT
   const editTodo = async (todoId: string, body: TTodo) => {
     try {
       setIsLoading(true);
-      await axios.put(`http://localhost:5000/todos/${todoId}`, body);
+      await axios.put(`${API_ENDPOINT}/${todoId}`, body);
       // Refetch todos data
       getAllTodos();
       setIsLoading(false);

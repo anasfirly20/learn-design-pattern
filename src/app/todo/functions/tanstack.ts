@@ -1,13 +1,13 @@
 // Miscellaneous
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import { API_ENDPOINT } from "../constants/constants";
 
 export const useTanstack = () => {
   const queryClient = useQueryClient();
 
   const getAllTodos = async () => {
-    const response = await axios.get("http://localhost:5000/todos");
+    const response = await axios.get(API_ENDPOINT);
     return response?.data;
   };
 
@@ -18,7 +18,7 @@ export const useTanstack = () => {
 
   // POST
   const postTodo = async (body: TTodo) => {
-    const response = await axios.post("http://localhost:5000/todos", body);
+    const response = await axios.post(API_ENDPOINT, body);
     return response?.data;
   };
 
@@ -29,9 +29,7 @@ export const useTanstack = () => {
 
   // DELETE
   const deleteTodoById = async (todoId: string) => {
-    const response = await axios.delete(
-      `http://localhost:5000/todos/${todoId}`
-    );
+    const response = await axios.delete(`${API_ENDPOINT}/${todoId}`);
     return response?.data;
   };
 
@@ -40,11 +38,9 @@ export const useTanstack = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
+  // EDIT
   const putTodo = async (todoId: string, body: TTodo) => {
-    const response = await axios.put(
-      `http://localhost:5000/todos/${todoId}`,
-      body
-    );
+    const response = await axios.put(`${API_ENDPOINT}/${todoId}`, body);
     return response?.data;
   };
 
