@@ -17,6 +17,7 @@ import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function TodoPage() {
   const {
@@ -35,27 +36,38 @@ export default function TodoPage() {
   // todos data
   const { isPending } = todos;
 
-  // Traditional way
-  const [data, setData] = useState<TTodo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+  // // Traditional way
+  // const [data, setData] = useState<TTodo[]>([]);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isError, setIsError] = useState<boolean>(false);
 
+  // const getAllTodos = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axios.get("http://localhost:5000/todos");
+  //     const todos = response?.data;
+  //     setData(todos);
+  //     setIsLoading(false);
+  //     setIsError(false);
+  //   } catch (error) {
+  //     setIsError(true);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getAllTodos();
+  // }, []);
+
+  // Tanstack query
   const getAllTodos = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get("http://localhost:5000/todos");
-      const todos = response?.data;
-      setData(todos);
-      setIsLoading(false);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-    }
+    const response = await axios.get("http://localhost:5000/todos");
+    return response?.data;
   };
 
-  useEffect(() => {
-    getAllTodos();
-  }, []);
+  const { data, isLoading, isError } = useQuery<TTodo[]>({
+    queryKey: ["todos"],
+    queryFn: getAllTodos,
+  });
 
   return (
     <section className="flex flex-col justify-center items-center">
