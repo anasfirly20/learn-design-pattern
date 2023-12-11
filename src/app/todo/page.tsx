@@ -80,6 +80,7 @@ export default function TodoPage() {
                   >
                     {isEdit && selectedItem ? (
                       <Input
+                        isInvalid={!dataEdit}
                         value={dataEdit}
                         className="w-[90%]"
                         onChange={(e) => handleChange(e)}

@@ -43,15 +43,19 @@ export const useTodo = () => {
   const handleMutation = (type: string, payload: any = null) => {
     switch (type) {
       case "add":
-        addTodo.mutate(payload);
-        reset();
+        if (newTodo.trim() !== "") {
+          addTodo.mutate(payload);
+          reset();
+        }
         break;
       case "delete":
         deleteTodo.mutate(payload);
         break;
       case "edit":
-        editTodo.mutate(payload);
-        toggleEdit();
+        if (dataEdit.trim() !== "") {
+          editTodo.mutate(payload);
+          toggleEdit();
+        }
         break;
       default:
         break;
