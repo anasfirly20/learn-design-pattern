@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTodo } from "../functions";
+import { useTodo } from "../functions/tanstack";
 import { Icon } from "@iconify/react";
 
 export default function ItemList() {

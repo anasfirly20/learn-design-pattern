@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 
 // Functions
-import { useTodo } from "./functions";
+import { useTanstack } from "./functions/tanstack";
 import { useTraditional } from "./functions/traditional";
 
 // Miscellaneous
@@ -15,30 +15,26 @@ import { Icon } from "@iconify/react";
 // Components
 import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function TodoPage() {
-  const {
-    isEdit,
-    selectedTodo,
-    setSelectedTodo,
-    toggleEdit,
-    // newTodo,
-    // dataEdit,
-    // setDataEdit,
-    // handleChange,
-    // handleMutation,
-    // todos,
-  } = useTodo();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [selectedTodo, setSelectedTodo] = useState<string | null>(null);
+
+  const toggleEdit = () => {
+    setIsEdit(!isEdit);
+  };
+
+  // Tanstack
+  const { query, createTodo, deleteTodo, editTodo } = useTanstack();
+  const { data, isLoading, isError } = query;
 
   // // Traditional way
   // const [data, setData] = useState<TTodo[]>([]);
   // const [isLoading, setIsLoading] = useState<boolean>(false);
   // const [isError, setIsError] = useState<boolean>(false);
 
-  // GET
   // const getAllTodos = async () => {
   //   try {
   //     setIsLoading(true);
@@ -53,9 +49,9 @@ export default function TodoPage() {
   //   }
   // };
 
-  useEffect(() => {
-    getAllTodos();
-  }, []);
+  // useEffect(() => {
+  //   getAllTodos();
+  // }, []);
 
   const [newTodo, setNewTodo] = useState<TTodo>({
     id: uuidv4(),
@@ -123,57 +119,6 @@ export default function TodoPage() {
     setNewTodo({ ...newTodo, [name]: value });
   };
 
-  // Tanstack query
-  const queryClient = useQueryClient();
-
-  const getAllTodos = async () => {
-    const response = await axios.get("http://localhost:5000/todos");
-    return response?.data;
-  };
-
-  const { data, isLoading, isError } = useQuery<TTodo[]>({
-    queryKey: ["todos"],
-    queryFn: getAllTodos,
-  });
-
-  // POST
-  const postTodo = async (body: TTodo) => {
-    const response = await axios.post("http://localhost:5000/todos", body);
-    return response?.data;
-  };
-
-  const addTodo = useMutation({
-    mutationFn: (body: TTodo) => postTodo(body),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
-  });
-
-  // DELETE
-  const deleteTodoById = async (todoId: string) => {
-    const response = await axios.delete(
-      `http://localhost:5000/todos/${todoId}`
-    );
-    return response?.data;
-  };
-
-  const deleteTodo = useMutation({
-    mutationFn: (todoId: string) => deleteTodoById(todoId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
-  });
-
-  // PUT
-  const putTodo = async (todoId: string, body: TTodo) => {
-    const response = await axios.put(
-      `http://localhost:5000/todos/${todoId}`,
-      body
-    );
-    return response?.data;
-  };
-
-  const editTodo = useMutation({
-    mutationFn: (variables: TTodo) => putTodo(variables.id, variables),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
-  });
-
   // reset function
   const resetForm = (item: any) => {
     if (isEdit) {
@@ -203,9 +148,10 @@ export default function TodoPage() {
             onChange={(e) => handleChange(e)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                // createTodo(newTodo);
-                addTodo.mutate(newTodo);
-                resetForm(null);
+                if (newTodo?.name.trim() !== "") {
+                  createTodo.mutate(newTodo);
+                  resetForm(null);
+                }
               }
             }}
             data-testid="todo-input"
@@ -213,10 +159,10 @@ export default function TodoPage() {
           <Button
             color="primary"
             onClick={() => {
-              // createTodo(newTodo);
-              addTodo.mutate(newTodo);
-              // reset
-              resetForm(null);
+              if (newTodo?.name.trim() !== "") {
+                createTodo.mutate(newTodo);
+                resetForm(null);
+              }
             }}
             data-testid="add-todo"
           >
@@ -238,14 +184,16 @@ export default function TodoPage() {
                   >
                     {isEdit && selectedItem ? (
                       <Input
-                        isInvalid={!dataEdit}
+                        isInvalid={!dataEdit?.name}
                         value={dataEdit?.name}
                         className="w-[90%]"
                         onChange={(e) => handleChange(e)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            editTodo.mutate(dataEdit);
-                            toggleEdit();
+                            if (dataEdit?.name?.trim() !== "") {
+                              editTodo.mutate(dataEdit);
+                              toggleEdit();
+                            }
                           }
                         }}
                       />
@@ -258,8 +206,10 @@ export default function TodoPage() {
                           icon="ic:baseline-done"
                           className="text-2xl icon"
                           onClick={() => {
-                            editTodo.mutate(dataEdit);
-                            toggleEdit();
+                            if (dataEdit?.name?.trim() !== "") {
+                              editTodo.mutate(dataEdit);
+                              toggleEdit();
+                            }
                           }}
                         />
                       )}
