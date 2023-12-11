@@ -20,7 +20,7 @@ export const useTodo = () => {
 
   const queryClient = useQueryClient();
 
-  const { data, isPending, isError } = useQuery({
+  const todos = useQuery({
     queryKey: ["todos"],
     queryFn: getAllTodos,
   });
@@ -82,14 +82,12 @@ export const useTodo = () => {
     newTodo,
     isEdit,
     selectedTodo,
-    data,
-    isPending,
-    isError,
     dataEdit,
     handleChange,
     setSelectedTodo,
     toggleEdit,
     setDataEdit,
     handleMutation,
+    todos,
   };
 };

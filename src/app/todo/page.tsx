@@ -6,6 +6,7 @@ import { Input } from "@nextui-org/input";
 
 // Functions
 import { useTodo } from "./functions";
+import { useTraditional } from "./functions/traditional";
 
 // Miscellaneous
 import { v4 as uuidv4 } from "uuid";
@@ -14,6 +15,8 @@ import { Icon } from "@iconify/react";
 // Components
 import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function TodoPage() {
   const {
@@ -22,14 +25,37 @@ export default function TodoPage() {
     selectedTodo,
     setSelectedTodo,
     toggleEdit,
-    data,
-    isPending,
-    isError,
     dataEdit,
     setDataEdit,
     handleChange,
     handleMutation,
+    todos,
   } = useTodo();
+
+  // todos data
+  const { isPending } = todos;
+
+  // Traditional way
+  const [data, setData] = useState<TTodo[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const getAllTodos = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get("http://localhost:5000/todos");
+      const todos = response?.data;
+      setData(todos);
+      setIsLoading(false);
+      setIsError(false);
+    } catch (error) {
+      setIsError(true);
+    }
+  };
+
+  useEffect(() => {
+    getAllTodos();
+  }, []);
 
   return (
     <section className="flex flex-col justify-center items-center">
@@ -67,7 +93,7 @@ export default function TodoPage() {
         </section>
         <section className="grid gap-5 h-fit">
           <h5>Items List</h5>
-          {isPending && <LoadingComponent />}
+          {isLoading && <LoadingComponent />}
           {isError && <ErrorComponent />}
           {data && data?.length > 0 && !isError && (
             <ul className="grid" data-testid="todo-list">
@@ -135,7 +161,7 @@ export default function TodoPage() {
               })}
             </ul>
           )}
-          {data?.length === 0 && (
+          {data?.length === 0 && !isLoading && (
             <p className="text-text-secondary">No items</p>
           )}
         </section>
