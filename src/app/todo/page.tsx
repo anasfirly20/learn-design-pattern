@@ -17,41 +17,41 @@ import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function TodoPage() {
   const {
-    // newTodo,
     isEdit,
     selectedTodo,
     setSelectedTodo,
     toggleEdit,
+    // newTodo,
     // dataEdit,
     // setDataEdit,
     // handleChange,
-    handleMutation,
-    todos,
+    // handleMutation,
+    // todos,
   } = useTodo();
 
   // // Traditional way
-  const [data, setData] = useState<TTodo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+  // const [data, setData] = useState<TTodo[]>([]);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isError, setIsError] = useState<boolean>(false);
 
   // GET
-  const getAllTodos = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get("http://localhost:5000/todos");
-      const todos = response?.data;
-      setData(todos);
-      setIsLoading(false);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
+  // const getAllTodos = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axios.get("http://localhost:5000/todos");
+  //     const todos = response?.data;
+  //     setData(todos);
+  //     setIsLoading(false);
+  //     setIsError(false);
+  //   } catch (error) {
+  //     setIsError(true);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     getAllTodos();
@@ -64,34 +64,34 @@ export default function TodoPage() {
   });
 
   // POST
-  const createTodo = async (newTodo: TTodo) => {
-    try {
-      setIsLoading(true);
-      await axios.post("http://localhost:5000/todos", newTodo);
-      // Refetch todos data
-      getAllTodos();
-      setIsLoading(false);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
+  // const createTodo = async (newTodo: TTodo) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await axios.post("http://localhost:5000/todos", newTodo);
+  //     // Refetch todos data
+  //     getAllTodos();
+  //     setIsLoading(false);
+  //     setIsError(false);
+  //   } catch (error) {
+  //     setIsError(true);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // DELETE
-  const deleteTodo = async (todoId: string) => {
-    try {
-      setIsLoading(true);
-      await axios.delete(`http://localhost:5000/todos/${todoId}`);
-      // Refetch todos data
-      getAllTodos();
-      setIsLoading(false);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
+  // const deleteTodo = async (todoId: string) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await axios.delete(`http://localhost:5000/todos/${todoId}`);
+  //     // Refetch todos data
+  //     getAllTodos();
+  //     setIsLoading(false);
+  //     setIsError(false);
+  //   } catch (error) {
+  //     setIsError(true);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // EDIT
   const [dataEdit, setDataEdit] = useState<TTodo>({
@@ -100,19 +100,20 @@ export default function TodoPage() {
     completed: false,
   });
 
-  const editTodo = async (todoId: string, body: TTodo) => {
-    try {
-      setIsLoading(true);
-      await axios.put(`http://localhost:5000/todos/${todoId}`, body);
-      // Refetch todos data
-      getAllTodos();
-      setIsLoading(false);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
+  // PUT
+  // const editTodo = async (todoId: string, body: TTodo) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await axios.put(`http://localhost:5000/todos/${todoId}`, body);
+  //     // Refetch todos data
+  //     getAllTodos();
+  //     setIsLoading(false);
+  //     setIsError(false);
+  //   } catch (error) {
+  //     setIsError(true);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -123,23 +124,63 @@ export default function TodoPage() {
   };
 
   // Tanstack query
-  // const getAllTodos = async () => {
-  //   const response = await axios.get("http://localhost:5000/todos");
-  //   return response?.data;
-  // };
+  const queryClient = useQueryClient();
 
-  // const { data, isLoading, isError } = useQuery<TTodo[]>({
-  //   queryKey: ["todos"],
-  //   queryFn: getAllTodos,
-  // });
+  const getAllTodos = async () => {
+    const response = await axios.get("http://localhost:5000/todos");
+    return response?.data;
+  };
 
-  //
+  const { data, isLoading, isError } = useQuery<TTodo[]>({
+    queryKey: ["todos"],
+    queryFn: getAllTodos,
+  });
+
+  // POST
+  const postTodo = async (body: TTodo) => {
+    const response = await axios.post("http://localhost:5000/todos", body);
+    return response?.data;
+  };
+
+  const addTodo = useMutation({
+    mutationFn: (body: TTodo) => postTodo(body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+  });
+
+  // DELETE
+  const deleteTodoById = async (todoId: string) => {
+    const response = await axios.delete(
+      `http://localhost:5000/todos/${todoId}`
+    );
+    return response?.data;
+  };
+
+  const deleteTodo = useMutation({
+    mutationFn: (todoId: string) => deleteTodoById(todoId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+  });
+
+  // PUT
+  const putTodo = async (todoId: string, body: TTodo) => {
+    const response = await axios.put(
+      `http://localhost:5000/todos/${todoId}`,
+      body
+    );
+    return response?.data;
+  };
+
+  const editTodo = useMutation({
+    mutationFn: (variables: TTodo) => putTodo(variables.id, variables),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+  });
+
+  // reset function
   const resetForm = (item: any) => {
     if (isEdit) {
       setDataEdit({
         ...dataEdit,
-        id: item?.id,
         name: item?.name,
+        id: item?.id,
       });
     } else {
       setNewTodo({
@@ -162,7 +203,8 @@ export default function TodoPage() {
             onChange={(e) => handleChange(e)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                createTodo(newTodo);
+                // createTodo(newTodo);
+                addTodo.mutate(newTodo);
                 resetForm(null);
               }
             }}
@@ -171,7 +213,8 @@ export default function TodoPage() {
           <Button
             color="primary"
             onClick={() => {
-              createTodo(newTodo);
+              // createTodo(newTodo);
+              addTodo.mutate(newTodo);
               // reset
               resetForm(null);
             }}
@@ -201,12 +244,7 @@ export default function TodoPage() {
                         onChange={(e) => handleChange(e)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
-                            // handleMutation("edit", {
-                            //   id: item?.id,
-                            //   name: dataEdit,
-                            //   completed: false,
-                            // });
-                            editTodo(item?.id, dataEdit);
+                            editTodo.mutate(dataEdit);
                             toggleEdit();
                           }
                         }}
@@ -220,11 +258,7 @@ export default function TodoPage() {
                           icon="ic:baseline-done"
                           className="text-2xl icon"
                           onClick={() => {
-                            // handleMutation("edit", {
-                            //   id: item?.id,
-                            //   name: dataEdit,
-                            // });
-                            editTodo(item?.id, dataEdit);
+                            editTodo.mutate(dataEdit);
                             toggleEdit();
                           }}
                         />
@@ -236,7 +270,6 @@ export default function TodoPage() {
                             className="text-2xl icon"
                             onClick={() => {
                               setSelectedTodo(item?.id);
-                              // setDataEdit(item?.name);
                               setDataEdit({
                                 ...dataEdit,
                                 id: item?.id,
@@ -249,7 +282,8 @@ export default function TodoPage() {
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
                             onClick={() => {
-                              deleteTodo(item?.id);
+                              // deleteTodo(item?.id);
+                              deleteTodo.mutate(item?.id);
                             }}
                             data-testid={`delete-todo-${item.id}`}
                           />
