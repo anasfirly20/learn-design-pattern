@@ -5,7 +5,6 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 
 // Functions
-import { useTanstack } from "./functions/tanstack";
 import { useTraditional } from "./functions/traditional";
 
 // Miscellaneous
@@ -15,43 +14,11 @@ import { Icon } from "@iconify/react";
 // Components
 import LoadingComponent from "./components/Loading";
 import ErrorComponent from "./components/Error";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function TodoPage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [selectedTodo, setSelectedTodo] = useState<string | null>(null);
-
-  const toggleEdit = () => {
-    setIsEdit(!isEdit);
-  };
-
-  // Tanstack
-  const { query, createTodo, deleteTodo, editTodo } = useTanstack();
-  const { data, isLoading, isError } = query;
-
-  // // Traditional way
-  // const [data, setData] = useState<TTodo[]>([]);
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [isError, setIsError] = useState<boolean>(false);
-
-  // const getAllTodos = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axios.get("http://localhost:5000/todos");
-  //     const todos = response?.data;
-  //     setData(todos);
-  //     setIsLoading(false);
-  //     setIsError(false);
-  //   } catch (error) {
-  //     setIsError(true);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getAllTodos();
-  // }, []);
 
   const [newTodo, setNewTodo] = useState<TTodo>({
     id: uuidv4(),
@@ -59,57 +26,11 @@ export default function TodoPage() {
     completed: false,
   });
 
-  // POST
-  // const createTodo = async (newTodo: TTodo) => {
-  //   try {
-  //     setIsLoading(true);
-  //     await axios.post("http://localhost:5000/todos", newTodo);
-  //     // Refetch todos data
-  //     getAllTodos();
-  //     setIsLoading(false);
-  //     setIsError(false);
-  //   } catch (error) {
-  //     setIsError(true);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // DELETE
-  // const deleteTodo = async (todoId: string) => {
-  //   try {
-  //     setIsLoading(true);
-  //     await axios.delete(`http://localhost:5000/todos/${todoId}`);
-  //     // Refetch todos data
-  //     getAllTodos();
-  //     setIsLoading(false);
-  //     setIsError(false);
-  //   } catch (error) {
-  //     setIsError(true);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // EDIT
   const [dataEdit, setDataEdit] = useState<TTodo>({
     name: "",
     id: "",
     completed: false,
   });
-
-  // PUT
-  // const editTodo = async (todoId: string, body: TTodo) => {
-  //   try {
-  //     setIsLoading(true);
-  //     await axios.put(`http://localhost:5000/todos/${todoId}`, body);
-  //     // Refetch todos data
-  //     getAllTodos();
-  //     setIsLoading(false);
-  //     setIsError(false);
-  //   } catch (error) {
-  //     setIsError(true);
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -117,6 +38,10 @@ export default function TodoPage() {
       setDataEdit({ ...dataEdit, name: e.target.value });
     }
     setNewTodo({ ...newTodo, [name]: value });
+  };
+
+  const toggleEdit = () => {
+    setIsEdit(!isEdit);
   };
 
   // reset function
@@ -136,6 +61,25 @@ export default function TodoPage() {
     }
   };
 
+  // Tanstack
+  // const { query, createTodo, deleteTodo, editTodo } = useTanstack();
+  // const { data, isLoading, isError } = query;
+
+  // Traditional
+  const {
+    data,
+    isLoading,
+    isError,
+    getAllTodos,
+    createTodo,
+    deleteTodo,
+    editTodo,
+  } = useTraditional();
+
+  useEffect(() => {
+    getAllTodos();
+  }, []);
+
   return (
     <section className="flex flex-col justify-center items-center">
       <h1>To do</h1>
@@ -149,7 +93,8 @@ export default function TodoPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 if (newTodo?.name.trim() !== "") {
-                  createTodo.mutate(newTodo);
+                  // createTodo.mutate(newTodo);
+                  createTodo(newTodo);
                   resetForm(null);
                 }
               }
@@ -160,7 +105,8 @@ export default function TodoPage() {
             color="primary"
             onClick={() => {
               if (newTodo?.name.trim() !== "") {
-                createTodo.mutate(newTodo);
+                // createTodo.mutate(newTodo);
+                createTodo(newTodo);
                 resetForm(null);
               }
             }}
@@ -191,7 +137,8 @@ export default function TodoPage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             if (dataEdit?.name?.trim() !== "") {
-                              editTodo.mutate(dataEdit);
+                              // editTodo.mutate(dataEdit);
+                              editTodo(item?.id, dataEdit);
                               toggleEdit();
                             }
                           }
@@ -207,7 +154,8 @@ export default function TodoPage() {
                           className="text-2xl icon"
                           onClick={() => {
                             if (dataEdit?.name?.trim() !== "") {
-                              editTodo.mutate(dataEdit);
+                              // editTodo.mutate(dataEdit);
+                              editTodo(item?.id, dataEdit);
                               toggleEdit();
                             }
                           }}
@@ -232,8 +180,8 @@ export default function TodoPage() {
                             icon="material-symbols:delete-outline"
                             className="text-2xl icon"
                             onClick={() => {
-                              // deleteTodo(item?.id);
-                              deleteTodo.mutate(item?.id);
+                              // deleteTodo.mutate(item?.id);
+                              deleteTodo(item?.id);
                             }}
                             data-testid={`delete-todo-${item.id}`}
                           />
