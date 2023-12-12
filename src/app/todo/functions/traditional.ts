@@ -7,17 +7,16 @@ export const useTraditional = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
-  // READ
   const getAllTodos = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(API_ENDPOINT);
       const todos = response?.data;
       setData(todos);
-      setIsLoading(false);
       setIsError(false);
     } catch (error) {
       setIsError(true);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -29,10 +28,10 @@ export const useTraditional = () => {
       await axios.post(API_ENDPOINT, newTodo);
       // Refetch todos data
       getAllTodos();
-      setIsLoading(false);
       setIsError(false);
     } catch (error) {
       setIsError(true);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -44,10 +43,10 @@ export const useTraditional = () => {
       await axios.delete(`${API_ENDPOINT}/${todoId}`);
       // Refetch todos data
       getAllTodos();
-      setIsLoading(false);
       setIsError(false);
     } catch (error) {
       setIsError(true);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -59,10 +58,10 @@ export const useTraditional = () => {
       await axios.put(`${API_ENDPOINT}/${todoId}`, body);
       // Refetch todos data
       getAllTodos();
-      setIsLoading(false);
       setIsError(false);
     } catch (error) {
       setIsError(true);
+    } finally {
       setIsLoading(false);
     }
   };

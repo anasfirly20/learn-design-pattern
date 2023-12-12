@@ -46,20 +46,12 @@ export default function TodoPage() {
   };
 
   // reset function
-  const resetForm = (item: any) => {
-    if (isEdit) {
-      setDataEdit({
-        ...dataEdit,
-        name: item?.name,
-        id: item?.id,
-      });
-    } else {
-      setNewTodo({
-        id: uuidv4(),
-        name: "",
-        completed: false,
-      });
-    }
+  const resetForm = () => {
+    setNewTodo({
+      id: uuidv4(),
+      name: "",
+      completed: false,
+    });
   };
 
   // Tanstack
@@ -99,7 +91,7 @@ export default function TodoPage() {
 
                   // Traditional way
                   // createTodo(newTodo);
-                  resetForm(null);
+                  resetForm();
                 }
               }
             }}
@@ -114,7 +106,7 @@ export default function TodoPage() {
 
                 // Traditional way
                 // createTodo(newTodo);
-                resetForm(null);
+                resetForm();
               }
             }}
             data-testid="add-todo"
