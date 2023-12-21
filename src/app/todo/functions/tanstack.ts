@@ -15,7 +15,6 @@ export const useTanstack = () => {
   const query = useQuery<TTodo[]>({
     queryKey: ["todos"],
     queryFn: getAllTodos,
-    refetchIntervalInBackground: true,
   });
 
   // CREATE
