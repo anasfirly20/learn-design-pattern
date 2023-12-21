@@ -15,6 +15,7 @@ export const useTanstack = () => {
   const query = useQuery<TTodo[]>({
     queryKey: ["todos"],
     queryFn: getAllTodos,
+    refetchIntervalInBackground: true,
   });
 
   // CREATE
@@ -57,3 +58,26 @@ export const useTanstack = () => {
     editTodo,
   };
 };
+
+/*
+  const createTodo = useMutation({
+    mutationFn: (body: TTodo) => postTodo(body),
+    onMutate: () => {
+      // Fires before the mutation function fires
+      console.log("onMutate");
+    },
+    onError: () => {
+      // Will fire if the mutation fails
+      console.log("onError");
+    },
+    onSuccess: () => {
+      // Fires when the mutation is successful
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      console.log("Mutation success!");
+    },
+    onSettled: () => {
+      // Will fire after the mutation succeeds or fails
+      console.log("onSettled");
+    },
+  });
+  */

@@ -58,6 +58,8 @@ export default function TodoPage() {
   const { query, createTodo, deleteTodo, editTodo } = useTanstack();
   const { data, isPending: isLoading, isError } = query;
 
+  const { mutate } = createTodo;
+
   // Traditional
   // const {
   //   data,
@@ -87,7 +89,7 @@ export default function TodoPage() {
               if (e.key === "Enter") {
                 if (newTodo?.name.trim() !== "") {
                   // Tanstack
-                  createTodo.mutate(newTodo);
+                  mutate(newTodo);
 
                   // Traditional way
                   // createTodo(newTodo);
@@ -147,7 +149,13 @@ export default function TodoPage() {
                         }}
                       />
                     ) : (
-                      <p className="text-text-primary">{item?.name}</p>
+                      <p
+                        className={`text-text-primary ${
+                          item.completed && "line-through"
+                        }`}
+                      >
+                        {item?.name}
+                      </p>
                     )}
                     <div className="flex gap-3">
                       {isEdit && selectedItem && (
