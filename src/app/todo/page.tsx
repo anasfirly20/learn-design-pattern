@@ -126,7 +126,7 @@ export default function TodoPage() {
                 const selectedItem = item?.id === selectedTodo;
                 return (
                   <li
-                    key={item.id}
+                    key={item?.id}
                     className="flex justify-between items-center px-5 py-2 bg-bg-primary rounded-sm border border-bg-secondary"
                   >
                     {isEdit && selectedItem ? (
