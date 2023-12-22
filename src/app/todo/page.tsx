@@ -151,7 +151,7 @@ export default function TodoPage() {
                     ) : (
                       <p
                         className={`text-text-primary ${
-                          item.completed && "line-through"
+                          item.completed && "line-through decoration-4"
                         }`}
                       >
                         {item?.name}
