@@ -5,13 +5,12 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 
 // Functions
-import { useTraditional } from "./functions/traditional";
 import { useTanstack } from "./functions/tanstack";
 
 // Miscellaneous
 import { v4 as uuidv4 } from "uuid";
 import { Icon } from "@iconify/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // Components
 import LoadingComponent from "./components/Loading";
