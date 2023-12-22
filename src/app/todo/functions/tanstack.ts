@@ -15,6 +15,7 @@ export const useTanstack = () => {
   const query = useQuery<TTodo[]>({
     queryKey: ["todos"],
     queryFn: getAllTodos,
+    // staleTime: 1000 * 5,
   });
 
   // CREATE
@@ -79,4 +80,23 @@ export const useTanstack = () => {
       console.log("onSettled");
     },
   });
+  */
+
+/* 
+  MOD DATA
+
+    const query = useQuery<TTodo[]>({
+    queryKey: ["todos"],
+    queryFn: getAllTodos,
+    // staleTime: 1000 * 5,
+    select: (data) => {
+      const modData = data?.map((item) => ({
+        name: item?.name?.toUpperCase(),
+        id: item?.id,
+        completed: item?.completed,
+      }));
+      return modData;
+    },
+  });
+
   */
