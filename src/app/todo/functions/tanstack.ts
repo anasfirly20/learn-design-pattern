@@ -15,8 +15,6 @@ export const useTanstack = () => {
   const query = useQuery<TTodo[]>({
     queryKey: ["todos"],
     queryFn: getAllTodos,
-    // refetchOnWindowFocus: false,
-    // staleTime: 10000,
   });
 
   // CREATE
@@ -27,7 +25,7 @@ export const useTanstack = () => {
 
   const createTodo = useMutation({
     mutationFn: (body: TTodo) => postTodo(body),
-    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
   // DELETE
@@ -49,7 +47,7 @@ export const useTanstack = () => {
 
   const editTodo = useMutation({
     mutationFn: (variables: TTodo) => putTodo(variables.id, variables),
-    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
   return {
